@@ -6,14 +6,17 @@ define(
 	// Список зависимостей
 	[
 		// Qlik API
-		"qlik"
+		"qlik",
+		// jQuery API
+		'jquery'
 	],
 
 	/**
 	 * Создаёт модуль расширения
 	 * @param {*} qlik Qlik API
+	 * @param {*} $ jQuery API
 	 */
-	function (qlik) {
+	function (qlik, $) {
 		var extensionModule = {
 
 			support: {
