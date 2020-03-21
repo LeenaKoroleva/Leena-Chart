@@ -1,0 +1,15 @@
+{
+	"name": "LeenaLineChartQlikExtension",
+	"description": "Leena Chart. Расширение Qlik Sense для линейного графика",
+	"type": "visualization",
+	"version": "1.0.0",
+	"icon": "line-chart",
+	"author": "LeenaKoroleva, Rodionov-Sergey",
+	"homepage": "https://github.com/LeenaKoroleva/Leena-Chart",
+	"keywords": "qlik-sense, visualization, chart, line chart, Leena Chart",
+	"license": "",
+	"repository": "",
+	"dependencies": {
+		"qlik-sense": ">=3.0.x"
+	}
+}
