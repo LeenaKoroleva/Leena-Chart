@@ -18,6 +18,7 @@ define(
 	 * @param {QlikApi} qlik Qlik API
 	 * @param {*} $ jQuery API
 	 * @param {LineChartPainter} lineChartPainter Компонент отрисовки линейного графика
+	 * @returns {*} Модуль расширения
 	 */
 	function (qlik, $, lineChartPainter) {
 
@@ -182,7 +183,7 @@ define(
 			// Значение
 			var value = null;
 			if (!row[valueColumnIndex].qIsEmpty) {
-				if (row[valueColumnIndex].qNum === 'number') {
+				if (typeof(row[valueColumnIndex].qNum) === 'number') {
 					value = row[valueColumnIndex].qNum;
 				}
 			}
