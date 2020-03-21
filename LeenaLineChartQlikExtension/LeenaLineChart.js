@@ -37,7 +37,7 @@ define(
             var horizontalPaddingValue = 5;
             var verticalPaddingValue = 10;
             var padding = {
-                left: horizontalPaddingValue + 20,	// Отступ слева для подписей оси значений
+                left: horizontalPaddingValue + 40,	// Отступ слева для подписей оси значений
                 top: verticalPaddingValue,
                 right: horizontalPaddingValue, 
                 bottom: verticalPaddingValue + 70   // Отступ снизу для подписи оси аргументов
@@ -80,7 +80,9 @@ define(
 			// Оси
 			
 			// Ось аргументов
-			createXAxis(plotArea, argumentXScale, valueYScale);
+            createXAxis(plotArea, argumentXScale, valueYScale);
+            // Ось значений
+			createYAxis(plotArea, argumentXScale, valueYScale);
         }
 
         /**
@@ -184,8 +186,10 @@ define(
 			axisGroup
 				// Размещение в нуле вертикальной оси
 				.attr('transform', 'translate(' + 0 + ',' + valueYScale(0) + ')')
-				// Изменение оси
-				.call(xAxis);
+				// Создание оси
+                .call(xAxis)
+                // Настройка отображение оси  
+                .call(styleAxis);
 
 			// Настройка подписей
 			axisGroup.selectAll('text')
@@ -201,26 +205,7 @@ define(
 					transform: 'rotate(90)' 
                 })
 				.style({
-                    'text-anchor': 'start',
-                    'fill': 'rgb(120, 120, 120)'
-                });
-
-            // Настройка засечек
-            axisGroup.selectAll('line')
-                .style({
-                    'stroke': 'rgb(120, 120, 120)', 
-                    'stroke-width': '1',
-                    'fill': 'none', 
-                    'shape-rendering': 'optimizeSpeed'
-                });
-            
-            // Настройка линии оси
-            axisGroup.selectAll('path')
-                .style({
-                    'stroke': 'rgb(120, 120, 120)', 
-                    'stroke-width': '1',
-                    'fill': 'none', 
-                    'shape-rendering': 'optimizeSpeed'
+                    'text-anchor': 'start'
                 });
 
 			// Старая группа
@@ -229,7 +214,70 @@ define(
                 .remove();
             
             return axisGroup;
-		}
+        }
+        
+        /**
+		 * Добавляет ось значений графика
+		 * @param {*} parentElement D3-объект родительского элемента
+		 * @param {*} argumentXScale Шкала аругментов
+		 * @param {*} valueYScale Шкала значений
+         * @returns {*} D3-объект для оси
+		 */
+		function createYAxis(parentElement, argumentXScale, valueYScale) {
+
+			// Ось
+			var yAxis = d3.svg.axis()
+				.scale(valueYScale)
+				.orient('left');
+
+			// Группа для оси
+			var axisGroup = parentElement.selectAll('g.axis.y')
+				.data([null]);
+
+			// Новая группа
+			axisGroup.enter()
+				// Добавление
+				.append('g')
+				.attr('class', 'axis y');
+			
+			// Изменённая группа
+			axisGroup
+				// Добавление оси
+                .call(yAxis)
+                // Настройка отображение оси  
+                .call(styleAxis);
+             
+			// Старая группа
+			axisGroup.exit()
+				// Удаление
+                .remove();
+            
+            return axisGroup;
+        }
+        
+        /**
+         * Настраивает отображение оси
+         * @param {*} axisElemnt D3-объект для родительского элемента оси 
+         */
+        function styleAxis(axisElemnt) {
+
+            var color = 'rgb(120, 120, 120)';
+
+            // Настройка подписей
+			axisElemnt.selectAll('text')
+                .style({
+                    'fill': color
+                });
+
+            // Настройка линии оси и засечек 
+            axisElemnt.selectAll('line,path')
+                .style({
+                    'stroke': color, 
+                    'stroke-width': 1,
+                    'fill': 'none', 
+                    'shape-rendering': 'optimizeSpeed'
+                });
+        }
 
         /**
          * Ищет или создаёт элемент с тегом, идентификатором и классами
