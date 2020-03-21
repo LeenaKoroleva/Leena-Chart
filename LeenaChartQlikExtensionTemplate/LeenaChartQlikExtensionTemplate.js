@@ -87,3 +87,16 @@ define(
 	}
 );
 
+/**
+ * JSDoc-определения для кастомных свойств расширения
+ */
+
+ /**
+ * Данные расширения Qlik
+ * @typedef {Object} ExtensionCustomProperties
+ */
+
+/**
+ * Мера гиперкуба
+ * @typedef {Object} ColumnCustomProperties
+*/

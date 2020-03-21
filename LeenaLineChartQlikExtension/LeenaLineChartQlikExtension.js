@@ -8,15 +8,18 @@ define(
 		// Qlik API
 		"qlik",
 		// jQuery API
-		'jquery'
+		'jquery',
+		// Линейный график
+		'./LeenaLineChart'
 	],
 
 	/**
 	 * Создаёт модуль расширения
 	 * @param {QlikApi} qlik Qlik API
 	 * @param {*} $ jQuery API
+	 * @param {LineChartPainter} lineChartPainter Компонент отрисовки линейного графика
 	 */
-	function (qlik, $) {
+	function (qlik, $, lineChartPainter) {
 
 		// Определения свойств
 		var propertyDefinitions = {
@@ -82,15 +85,18 @@ define(
 					// DEBUG:
 					console.log('Данные Qlik: ', qlikLayout);
 
-					$element.html( "Линейный график Leena Chart" );
-
 					// Получение данных для графика
-					var chart = getLineChartData(qlikLayout);
+					var lineChart = getLineChartData(qlikLayout);
 
-					// TODO: Отрисовка графика
 					// DEBUG:
-					console.log('Данные графика:', chart);
+					console.log('Данные графика:', lineChart);
 
+					// Создание SVG
+					var $svg = createSvg($element);
+
+					// Отрисовка графика
+					lineChartPainter.paint($svg.get(0), lineChart);
+					
                 }
                 catch (error) {
                     console.log(error);
@@ -173,8 +179,7 @@ define(
 		 * @returns {LineChartPoint} Точка графика
 		 */
 		function getLineChartPoint(row, argumentColumnIndex, valueColumnIndex) {
-			console.log('Text:', row[valueColumnIndex].qText, 'Number:', row[valueColumnIndex].qNum, 'Cell: ', row[valueColumnIndex]);
-			
+			// Значение
 			var value = null;
 			if (!row[valueColumnIndex].qIsEmpty) {
 				if (row[valueColumnIndex].qNum === 'number') {
@@ -182,6 +187,7 @@ define(
 				}
 			}
 
+			// Точка
 			/** @type {LineChartPoint} */ 
 			var point = {
 				argument: row[argumentColumnIndex].qText,
@@ -189,43 +195,49 @@ define(
 			};
 			return point;
 		}
+
+		/**
+		 * Находит существующий или создаёт новый SVG-элемент
+		 * @param {JQueryObject} $element jQuery-объет родительского элемента 
+		 * @returns {JQueryObject} jQuery-объект найденного или созданного SVG
+		 */
+		function createSvg($element) {
+
+			// Поиск SVG
+			var chartClass = 'linechart';
+			var $svg = $element.find('svg.' + chartClass);
+
+			// Если SVG найден - испольуем его
+			if ($svg.length > 0) {
+				return $svg.first();
+			}
+
+			// Создание элемента SVG
+			$svg = $('<svg xmlns="http://www.w3.org/2000/svg">')
+				// Назначение класса
+				.addClass(chartClass)
+				// Установка размера
+				.attr({
+					width: 600,
+					height: 400
+				})
+				.appendTo($element);
+
+			return $svg;
+		}
 	}
 );
 
 /**
- * JSDoc-определения для линейного графика Leena Chart
+ * JSDoc-определения для кастомных свойств расширения
  */
-
-/**
- * Данные для построения линейного графика
- * @typedef {Object} LineChart
- * @property {LineChartLine[]} lines Линии графика
- * @property {String[]} arguments Аргументы
- */
-
-/**
- * Линия линейного графика
- * @typedef {Object} LineChartLine
- * @property {String} title Заголовок линии
- * @property {LineChartPoint[]} points Точки линии
- */
-
-/**
- * Точка линейного графика
- * @typedef {Object} LineChartPoint
- * @property {String} argument Категория 
- * @property {Number=} value Значение
- */
-
 
  /**
  * Данные расширения Qlik
  * @typedef {Object} ExtensionCustomProperties
- * @property {String} ext - Заголовок расширения
  */
 
 /**
  * Мера гиперкуба
  * @typedef {Object} ColumnCustomProperties
- * @property {String} col - Заголовок меры
 */
