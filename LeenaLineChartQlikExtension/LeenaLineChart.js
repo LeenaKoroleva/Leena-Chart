@@ -40,7 +40,7 @@ define(
                 left: horizontalPaddingValue + 20,	// Отступ слева для подписей оси значений
                 top: verticalPaddingValue,
                 right: horizontalPaddingValue, 
-                bottom: verticalPaddingValue
+                bottom: verticalPaddingValue + 70   // Отступ снизу для подписи оси аргументов
             };
 
             // Размеры области построения
@@ -76,6 +76,11 @@ define(
             
             // Линия графика
             createLine(plotArea, chart, argumentXScale, valueYScale, lineColorScale);
+            
+			// Оси
+			
+			// Ось аргументов
+			createXAxis(plotArea, argumentXScale, valueYScale);
         }
 
         /**
@@ -110,6 +115,7 @@ define(
 		 * @param {LineChart} chart Данные графика
 		 * @param {*} argumentXScale Шкала аругментов
 		 * @param {*} valueYScale Шкала значений
+         * @returns {*} D3-объект для линии
 		 */
 		function createLine(parentElement, chart, argumentXScale, valueYScale, colorScale) {
 			
@@ -141,7 +147,88 @@ define(
 			// Старые линии
 			linePath.exit()
 				// Удаление пути
-				.remove();
+                .remove();
+                
+            return linePath;
+        }
+        
+        /**
+		 * Добавляет ось аргументов графика
+		 * @param {*} parentElement D3-объект родительского элемента
+		 * @param {*} argumentXScale Шкала аругментов
+		 * @param {*} valueYScale Шкала значений
+         * @returns {*} D3-объект для оси
+		 */
+		function createXAxis(parentElement, argumentXScale, valueYScale) {
+
+			// Длина засечки на оси
+			var axisNickLength = 6;
+
+			// Ось
+			var xAxis = d3.svg.axis()
+				.scale(argumentXScale)
+				.orient('bottom')
+				.tickSize(axisNickLength);
+
+			// Группа для оси
+			var axisGroup = parentElement.selectAll('g.axis.x')
+				.data([null]);
+
+			// Новая группа
+		    axisGroup.enter()
+				// Добавление
+				.append('g')
+				.attr('class', 'axis x');
+
+			// Изменённая группа
+			axisGroup
+				// Размещение в нуле вертикальной оси
+				.attr('transform', 'translate(' + 0 + ',' + valueYScale(0) + ')')
+				// Изменение оси
+				.call(xAxis);
+
+			// Настройка подписей
+			axisGroup.selectAll('text')
+				// Размещение
+				.attr({
+					// Размещение под засечкой
+					x: axisNickLength + 2,
+					dx: 0,
+					// Центрирование по высоте шрифта
+					y: '0.4em',
+					dy: 0,
+					// Вертикальное расположение текста        
+					transform: 'rotate(90)' 
+                })
+				.style({
+                    'text-anchor': 'start',
+                    'fill': 'rgb(120, 120, 120)'
+                });
+
+            // Настройка засечек
+            axisGroup.selectAll('line')
+                .style({
+                    'stroke': 'rgb(120, 120, 120)', 
+                    'stroke-width': '1',
+                    'fill': 'none', 
+                    'shape-rendering': 'optimizeSpeed'
+                });
+            
+            // Настройка линии оси
+            axisGroup.selectAll('path')
+                .style({
+                    'stroke': 'rgb(120, 120, 120)', 
+                    'stroke-width': '1',
+                    'fill': 'none', 
+                    'shape-rendering': 'optimizeSpeed'
+                });
+
+			// Старая группа
+			axisGroup.exit()
+				// Удаление
+                .remove();
+            
+            return axisGroup;
 		}
 
         /**
